@@ -1,41 +1,20 @@
-/*
-
-entityManager.js
-
-A module which handles arbitrary entity-management for "Asteroids"
-
-
-We create this module as a single global object, and initialise it
-with suitable 'data' and 'methods'.
-
-"Private" properties are denoted by an underscore prefix convention.
-
-*/
-
-
 "use strict";
-
-
-// Tell jslint not to complain about my use of underscore prefixes (nomen),
-// my flattening of some indentation (white), or my use of incr/decr ops 
-// (plusplus).
-//
-/*jslint nomen: true, white: true, plusplus: true*/
-
 
 var entityManager = {
 
 // "PRIVATE" DATA
 
-_rocks   : [],
+/*_rocks   : [],
 _bullets : [],
 _ships   : [],
 
-_bShowRocks : true,
+_bShowRocks : true,*/
+
+_pacman : [],
 
 // "PRIVATE" METHODS
 
-_generateRocks : function() {
+/*_generateRocks : function() {
     var NUM_ROCKS = 4;
 
     for (var i = 0; i < NUM_ROCKS; ++i) {
@@ -67,7 +46,7 @@ _findNearestShip : function(posX, posY) {
         theShip : closestShip,
         theIndex: closestIndex
     };
-},
+},*/
 
 _forEachOf : function(aCategory, fn) {
     for (var i = 0; i < aCategory.length; ++i) {
@@ -86,15 +65,16 @@ KILL_ME_NOW : -1,
 // i.e. thing which need `this` to be defined.
 //
 deferredSetup : function () {
-    this._categories = [this._rocks, this._bullets, this._ships];
+    //this._categories = [this._rocks, this._bullets, this._ships];
+    this._categories = [this._pacman];
 },
 
 init : function() {
-    this._generateRocks();
+    //this._generateRocks();
     //this._generateShip();
 },
 
-fireBullet : function(cx, cy, velX, velY, rotation) {
+/*fireBullet : function(cx, cy, velX, velY, rotation) {
     this._bullets.push(new Bullet({
         cx   : cx,
         cy   : cy,
@@ -133,9 +113,13 @@ haltShips : function() {
 
 toggleRocks : function() {
     this._bShowRocks = !this._bShowRocks;
+},*/
+
+generatePacman : function(descr) {
+    this._pacman.push(new Pacman(descr));
 },
 
-update: function(du) {
+update : function(du) {
 
     for (var c = 0; c < this._categories.length; ++c) {
 
@@ -157,7 +141,7 @@ update: function(du) {
         }
     }
     
-    if (this._rocks.length === 0) this._generateRocks();
+    //if (this._rocks.length === 0) this._generateRocks();
 
 },
 
@@ -169,8 +153,8 @@ render: function(ctx) {
 
         var aCategory = this._categories[c];
 
-        if (!this._bShowRocks && aCategory == this._rocks)
-            continue;
+        /*if (!this._bShowRocks && aCategory == this._rocks)
+            continue;*/
 
         for (var i = 0; i < aCategory.length; ++i) {
 

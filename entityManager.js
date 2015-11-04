@@ -10,6 +10,7 @@ _ships   : [],
 
 _bShowRocks : true,*/
 
+_maze : [],
 _pacman : [],
 
 // "PRIVATE" METHODS
@@ -65,13 +66,20 @@ KILL_ME_NOW : -1,
 // i.e. thing which need `this` to be defined.
 //
 deferredSetup : function () {
-    //this._categories = [this._rocks, this._bullets, this._ships];
-    this._categories = [this._pacman];
+    this._categories = [this._maze, this._pacman];
 },
 
 init : function() {
     //this._generateRocks();
     //this._generateShip();
+
+    this._generateMaze({});
+
+    this._generatePacman({
+        cx : g_gCanvas.width / 2,
+        cy : g_gCanvas.height / 2
+    });
+
 },
 
 /*fireBullet : function(cx, cy, velX, velY, rotation) {
@@ -115,9 +123,15 @@ toggleRocks : function() {
     this._bShowRocks = !this._bShowRocks;
 },*/
 
-generatePacman : function(descr) {
+_generatePacman : function(descr) {
     this._pacman.push(new Pacman(descr));
 },
+
+_generateMaze : function(descr) {
+    g_maze = new Maze(descr);
+    this._maze.push(g_maze);
+},
+
 
 update : function(du) {
 
@@ -141,8 +155,6 @@ update : function(du) {
         }
     }
     
-    //if (this._rocks.length === 0) this._generateRocks();
-
 },
 
 render: function(ctx) {
@@ -152,9 +164,6 @@ render: function(ctx) {
     for (var c = 0; c < this._categories.length; ++c) {
 
         var aCategory = this._categories[c];
-
-        /*if (!this._bShowRocks && aCategory == this._rocks)
-            continue;*/
 
         for (var i = 0; i < aCategory.length; ++i) {
 

@@ -37,6 +37,12 @@ isBetween: function(value, lowBound, highBound) {
     return true;
 },
 
+getWrapPos: function(pos) {
+    pos.cx = this.wrapRange(pos.cx, 0, g_canvas.width);
+    pos.cy = this.wrapRange(pos.cy, 0, g_canvas.height);
+    return pos;
+},
+
 
 // RANDOMNESS
 // ==========
@@ -96,11 +102,27 @@ fillCircle: function (ctx, x, y, r) {
     ctx.fill();
 },
 
-fillBox: function (ctx, x, y, w, h, style) {
+fillBox: function (ctx, cx, cy, w, h, style) {
     var oldStyle = ctx.fillStyle;
     ctx.fillStyle = style;
-    ctx.fillRect(x, y, w, h);
+    ctx.fillRect(cx-w/2, cy-h/2, w, h);
     ctx.fillStyle = oldStyle;
+},
+
+
+// MAZE CALCULATIONS
+// =================
+
+getCanvasCoord : function(col, row) {
+    var cx = (col*g_maze.colWidth+(col+1)*g_maze.colWidth)/2;
+    var cy = (row*g_maze.colHeight+(row+1)*g_maze.colHeight)/2;
+    return {cx : cx, cy : cy};
+},
+
+getMazeCoord : function(cx, cy) {
+    var col = Math.floor(cx/g_maze.colWidth);
+    var row = Math.floor(cy/g_maze.colHeight);
+    return {col : col, row : row};
 }
 
 };

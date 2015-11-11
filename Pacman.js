@@ -58,6 +58,8 @@ Pacman.prototype.targetDirection = "NONE"; //the direction you want to move in
 Pacman.prototype.update = function (du) {
     this._updateDirection();
     this._updateVel(du);
+    g_pacmancx = this.cx;
+    g_pacmancy = this.cy;
 
     var nextMazeCoord = this._getNextMazeCoord(du, this.xVel, this.yVel, 
         this.direction);

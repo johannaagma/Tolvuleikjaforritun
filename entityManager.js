@@ -11,6 +11,7 @@ _ships   : [],
 _bShowRocks : true,*/
 
 _maze : [],
+_pallets : [],
 _pacman : [],
 
 // "PRIVATE" METHODS
@@ -66,7 +67,7 @@ KILL_ME_NOW : -1,
 // i.e. thing which need `this` to be defined.
 //
 deferredSetup : function () {
-    this._categories = [this._maze, this._pacman];
+    this._categories = [this._maze,this._pallets, this._pacman];
 },
 
 init : function() {
@@ -74,7 +75,7 @@ init : function() {
     //this._generateShip();
 
     this._generateMaze({});
-
+    this._generatePallets({});
     this._generatePacman({
         cx : g_gCanvas.width / 2,
         cy : g_gCanvas.height / 2
@@ -125,6 +126,11 @@ toggleRocks : function() {
 
 _generatePacman : function(descr) {
     this._pacman.push(new Pacman(descr));
+},
+
+_generatePallets: function(descr) {
+    g_pallets = new Pallets(descr);
+    this._pallets.push(g_pallets);
 },
 
 _generateMaze : function(descr) {

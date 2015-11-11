@@ -21,6 +21,9 @@ var g_gCanvas = {width : g_canvas.width, height : 525}; //is also in globals.js
 // ====================
 
 var g_maze = [];
+var g_pallets = [];
+var g_pacmancx = 0;
+var g_pacmancy = 0;
 
 // =============
 // GATHER INPUTS
@@ -147,8 +150,7 @@ function requestPreloads() {
         /*ship   : "https://notendur.hi.is/~pk/308G/images/ship.png",
         ship2  : "https://notendur.hi.is/~pk/308G/images/ship_2.png",
         rock   : "https://notendur.hi.is/~pk/308G/images/rock.png"*/
-        pacman : "https://notendur.hi.is/~jam9/pics/pacman.png",
-        blinky : "https://notendur.hi.is/~jam9/pics/blinky.png"
+        pacman : "https://notendur.hi.is/~jam9/pics/pacman.png"
     };
 
     imagesPreload(requiredImages, g_images, preloadDone);
@@ -165,7 +167,6 @@ function preloadDone() {
     g_sprites.bullet = new Sprite(g_images.ship);
     g_sprites.bullet.scale = 0.25;*/
     g_sprites.pacman = new Sprite(g_images.pacman);
-    g_sprites.blinky = new Sprite(g_images.blinky);
 
     entityManager.init();
 

@@ -51,6 +51,10 @@ randRange: function(min, max) {
     return (min + Math.random() * (max - min));
 },
 
+chooseRandomFromArray : function(arr) {
+    return arr[Math.floor(Math.random() * arr.length)];
+},
+
 
 // MISC
 // ====
@@ -68,14 +72,16 @@ distSq: function(x1, y1, x2, y2) {
 },
 
 wrappedDistSq: function(x1, y1, x2, y2, xWrap, yWrap) {
-    var dx = Math.abs(x2-x1),
-	dy = Math.abs(y2-y1);
+    var dx = Math.abs(x2-x1);
+    var dy = Math.abs(y2-y1);
+
     if (dx > xWrap/2) {
-	dx = xWrap - dx;
-    };
-    if (dy > yWrap/2) {
-	dy = yWrap - dy;
+	   dx = xWrap - dx;
     }
+    if (dy > yWrap/2) {
+	   dy = yWrap - dy;
+    }
+    
     return this.square(dx) + this.square(dy);
 },
 
@@ -96,16 +102,23 @@ strokeCircle: function (ctx, x, y, r) {
     ctx.stroke();
 },
 
-fillCircle: function (ctx, x, y, r) {
+fillCircle: function (ctx, x, y, r, style) {
+    var oldStyle = ctx.fillStyle;
+    ctx.fillStyle = style;
+
     ctx.beginPath();
     ctx.arc(x, y, r, 0, Math.PI * 2);
     ctx.fill();
+
+    ctx.fillStyle = oldStyle;
 },
 
 fillBox: function (ctx, cx, cy, w, h, style) {
     var oldStyle = ctx.fillStyle;
     ctx.fillStyle = style;
+
     ctx.fillRect(cx-w/2, cy-h/2, w, h);
+    
     ctx.fillStyle = oldStyle;
 },
 
@@ -114,15 +127,56 @@ fillBox: function (ctx, cx, cy, w, h, style) {
 // =================
 
 getCanvasCoord : function(col, row) {
-    var cx = (col*g_maze.colWidth+(col+1)*g_maze.colWidth)/2;
-    var cy = (row*g_maze.colHeight+(row+1)*g_maze.colHeight)/2;
+    var cx = (col*g_game.maze.cellWidth+(col+1)*g_game.maze.cellWidth)/2;
+    var cy = (row*g_game.maze.cellHeight+(row+1)*g_game.maze.cellHeight)/2;
     return {cx : cx, cy : cy};
 },
 
 getMazeCoord : function(cx, cy) {
-    var col = Math.floor(cx/g_maze.colWidth);
-    var row = Math.floor(cy/g_maze.colHeight);
+    var col = Math.floor(cx/g_game.maze.cellWidth);
+    var row = Math.floor(cy/g_game.maze.cellHeight);
     return {col : col, row : row};
-}
+},
+
+
+// ARRAY STUFF
+// ===========
+
+getArrayCopy : function(arr) {
+    var copy;
+
+    if(Array.isArray(arr)) {
+        copy = arr.slice(0);
+
+        for(var i = 0; i < copy.length; i++) {
+            copy[ i ] = this.getArrayCopy(copy[i]);
+        }
+
+        return copy;
+    } else {
+        return arr;
+    }
+},
+
+// TIME STUFF
+// ==========
+
+getNominalTime : function(sec) {
+    return sec*1000/NOMINAL_UPDATE_INTERVAL;
+},
+
+// PACMAN POSITION STUFF
+// =====================
+
+getNextPacmanPosition : function(pacmanPos, sign, nSteps) {
+    var pacmanMazeCoord = this.getMazeCoord(pacmanPos.posX, pacmanPos.posY);
+    
+    var targetCol = pacmanMazeCoord.col + sign.xSign*nSteps;
+    var targetRow = pacmanMazeCoord.row + sign.ySign*nSteps;
+
+    var nextPos = util.getCanvasCoord(targetCol, targetRow); 
+
+    return nextPos;
+},
 
 };

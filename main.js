@@ -60,10 +60,10 @@ main._updateClocks = function (frameTime) {
 main._iterCore = function (dt) {
     
     // Handle QUIT
-    if (requestedQuit()) {
+    /*if (requestedQuit()) {
         this.gameOver();
         return;
-    }
+    }*/
     
     gatherInputs();
     update(dt);

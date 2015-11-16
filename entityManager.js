@@ -4,55 +4,65 @@ var entityManager = {
 
 // "PRIVATE" DATA
 
-/*_rocks   : [],
-_bullets : [],
-_ships   : [],
-
-_bShowRocks : true,*/
-
 _maze : [],
-_pallets : [],
+_ghosts : [],
 _pacman : [],
 
+_bUpdateGhosts : true,
+
 // "PRIVATE" METHODS
-
-/*_generateRocks : function() {
-    var NUM_ROCKS = 4;
-
-    for (var i = 0; i < NUM_ROCKS; ++i) {
-        this.generateRock();
-    }
-},
-
-_findNearestShip : function(posX, posY) {
-    var closestShip = null,
-        closestIndex = -1,
-        closestSq = 1000 * 1000;
-
-    for (var i = 0; i < this._ships.length; ++i) {
-
-        var thisShip = this._ships[i];
-        var shipPos = thisShip.getPos();
-        var distSq = util.wrappedDistSq(
-            shipPos.posX, shipPos.posY, 
-            posX, posY,
-            g_canvas.width, g_canvas.height);
-
-        if (distSq < closestSq) {
-            closestShip = thisShip;
-            closestIndex = i;
-            closestSq = distSq;
-        }
-    }
-    return {
-        theShip : closestShip,
-        theIndex: closestIndex
-    };
-},*/
 
 _forEachOf : function(aCategory, fn) {
     for (var i = 0; i < aCategory.length; ++i) {
         fn.call(aCategory[i]);
+    }
+},
+
+_generateMaze : function(descr) {
+    g_game.maze = new Maze(descr);
+    this._maze.push(g_game.maze);
+},
+
+_generatePacman : function(descr) {
+    g_game.pacman = new Pacman(descr);
+    this._pacman.push(g_game.pacman);
+},
+
+_generateGhost : function(descr, i) {
+    g_game.ghosts[i] = new Ghost(descr);
+    this._ghosts.push(g_game.ghosts[i]);
+},
+
+_generateGhosts : function() {
+    var sprites = [g_sprites.blinky, g_sprites.pinky, g_sprites.inky, g_sprites.clyde];
+    var colStart = [14, 14, 12, 16];
+    var rowstart = [11.5, 14.5, 14.5, 14.5];
+    var boxSeconds = [0, 4, 6, 8];
+    var canLeaveBox = [true, false, false, false];
+    var scatterTarget = [   {posX: 0,               posY: 0},
+                            {posX: 0,               posY: g_gCanvas.height},
+                            {posX: g_gCanvas.width, posY: 0},
+                            {posX: g_gCanvas.width, posY: g_gCanvas.height}];
+    var debugColors = ["#FF0000", "#F5A9E1", "#2EFEC8", "#F3F781"];
+    var names = ["blinky", "pinky", "inky", "clyde"];
+
+    for(var i = 0; i < sprites.length; i++) {
+        this._generateGhost({
+            cx : colStart[i] * g_game.maze.cellWidth,
+            cy : rowstart[i] * g_game.maze.cellHeight,
+
+            sprite : sprites[i],
+
+            boxSeconds : boxSeconds[i],
+
+            scatterTarget : scatterTarget[i],
+
+            canLeaveBox : canLeaveBox[i],
+
+            name : names[i],
+
+            debugColor : debugColors[i]
+        }, i);
     }
 },
 
@@ -67,92 +77,42 @@ KILL_ME_NOW : -1,
 // i.e. thing which need `this` to be defined.
 //
 deferredSetup : function () {
-    this._categories = [this._maze,this._pallets, this._pacman];
+    this._categories = [this._maze, this._ghosts, this._pacman];
 },
 
 init : function() {
-    //this._generateRocks();
-    //this._generateShip();
-
     this._generateMaze({});
-    this._generatePallets({});
+
+    this._generateGhosts();
+
     this._generatePacman({
-        cx : g_gCanvas.width / 2,
-        cy : g_gCanvas.height / 2
+        cx : 14*g_game.maze.cellWidth,
+        cy : 23.5*g_game.maze.cellHeight
     });
-
 },
 
-/*fireBullet : function(cx, cy, velX, velY, rotation) {
-    this._bullets.push(new Bullet({
-        cx   : cx,
-        cy   : cy,
-        velX : velX,
-        velY : velY,
-
-        rotation : rotation
-    }));
+resetAll : function() {
+    this._forEachOf(this._pacman, Pacman.prototype.reset);
+    this._forEachOf(this._ghosts, Ghost.prototype.reset);
 },
 
-generateRock : function(descr) {
-    this._rocks.push(new Rock(descr));
+//is used to stop the ghosts temporarly while pacman warps
+toggleUpdateGhosts : function() {
+    this._bUpdateGhosts = !this._bUpdateGhosts;
 },
-
-generateShip : function(descr) {
-    this._ships.push(new Ship(descr));
-},
-
-killNearestShip : function(xPos, yPos) {
-    var theShip = this._findNearestShip(xPos, yPos).theShip;
-    if(theShip) theShip.kill();
-},
-
-yoinkNearestShip : function(xPos, yPos) {
-    var theShip = this._findNearestShip(xPos, yPos).theShip;
-    if(theShip) theShip.setPos(xPos, yPos);
-},
-
-resetShips : function() {
-    this._forEachOf(this._ships, Ship.prototype.reset);
-},
-
-haltShips : function() {
-    this._forEachOf(this._ships, Ship.prototype.halt);
-},	
-
-toggleRocks : function() {
-    this._bShowRocks = !this._bShowRocks;
-},*/
-
-_generatePacman : function(descr) {
-    this._pacman.push(new Pacman(descr));
-},
-
-_generatePallets: function(descr) {
-    g_pallets = new Pallets(descr);
-    this._pallets.push(g_pallets);
-},
-
-_generateMaze : function(descr) {
-    g_maze = new Maze(descr);
-    this._maze.push(g_maze);
-},
-
 
 update : function(du) {
-
     for (var c = 0; c < this._categories.length; ++c) {
 
         var aCategory = this._categories[c];
         var i = 0;
 
+        if (!this._bUpdateGhosts && aCategory == this._ghosts)
+            continue;
+
         while (i < aCategory.length) {
-
             var status = aCategory[i].update(du);
-
             if (status === this.KILL_ME_NOW) {
-                // remove the dead guy, and shuffle the others down to
-                // prevent a confusing gap from appearing in the array
                 aCategory.splice(i,1);
             }
             else {
@@ -160,11 +120,9 @@ update : function(du) {
             }
         }
     }
-    
 },
 
 render: function(ctx) {
-
     var debugX = 10, debugY = 100;
 
     for (var c = 0; c < this._categories.length; ++c) {

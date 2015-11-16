@@ -28,45 +28,47 @@ _entities : [],
 //
 // <none yet>
 
+_collision : function(x1, y1, x2, y2) {
+    var coord1 = util.getMazeCoord(x1, y1);
+    var coord2 = util.getMazeCoord(x2, y2);
+
+    return ((coord1.col === coord2.col) && (coord1.row === coord2.row));
+},
+
 // PUBLIC METHODS
 
 getNewSpatialID : function() {
-
-    // TODO: YOUR STUFF HERE!
-
+    return this._nextSpatialID++;
 },
 
 register : function(entity) {
-    var pos = entity.getPos();
     var spatialID = entity.getSpatialID();
-    
-    // TODO: YOUR STUFF HERE!
-
+    this._entities[spatialID] = entity;
 },
 
 unregister : function(entity) {
     var spatialID = entity.getSpatialID();
-
-    // TODO: YOUR STUFF HERE!
-
+    this._entities[spatialID] = undefined;
 },
 
 findEntityInRange : function(posX, posY, radius) {
-
-    // TODO: YOUR STUFF HERE!
-
+    for(var ID in this._entities) {
+        var entity = this._entities[ID];
+        if(entity !== undefined) {
+            var pos = entity.getPos();
+            var collision = this._collision(posX, posY, pos.posX, pos.posY);
+            if(collision) return entity;
+        }
+    }
 },
 
 render : function(ctx) {
-    var oldStyle = ctx.strokeStyle;
-    ctx.strokeStyle = "red";
-    
-    for (var ID in this._entities) {
-        var e = this._entities[ID];
-        var pos = e.getPos();
-        util.strokeCircle(ctx, pos.posX, pos.posY, e.getRadius());
+    for (var i = 0; i < g_game.ghosts.length; i++) {
+        var ghost =  g_game.ghosts[i];
+        var target = ghost.targetDir;
+        if(g_game.ghostMode !== g_game.FRIGHTENED && ghost.canLeaveBox)
+            util.fillCircle(ctx, target.posX, target.posY, 7, ghost.debugColor);
     }
-    ctx.strokeStyle = oldStyle;
 }
 
 }

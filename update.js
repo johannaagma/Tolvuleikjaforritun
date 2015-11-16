@@ -56,7 +56,7 @@ var KEY_STEP  = keyCode('O');
 var g_isUpdatePaused = false;
 
 function shouldSkipUpdate() {
-    if (eatKey(KEY_PAUSE)) {
+    if (eatKey(KEY_PAUSE) && g_game.canStartGame) {
         g_isUpdatePaused = !g_isUpdatePaused;
     }
     return g_isUpdatePaused && !eatKey(KEY_STEP);    

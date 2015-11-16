@@ -23,7 +23,8 @@ MovingObject.prototype._canGoTargetDirection = function (du) {
     var nextMazeCoordWithRadius = this._getNextMazeCoord(du, this.targetDirection);
     var nextCol = nextMazeCoordWithRadius.col;
     var nextRow = nextMazeCoordWithRadius.row;
-    if(g_game.maze.getValue(nextCol, nextRow) !== g_game.maze.PATH) {
+    var nextValue = g_game.maze.getValue(nextCol, nextRow);
+    if(this.isWall(nextValue)) {
         return false;
     }
 
@@ -139,4 +140,9 @@ MovingObject.prototype._updateVelocityByDirection = function () {
 
 MovingObject.prototype.getDirection = function () {
     return this.direction;
+};
+
+MovingObject.prototype.isWall = function (cellValue) {
+    var nonWallCellTypes = this._getNonWallCellTypes();
+    return (nonWallCellTypes.indexOf(cellValue) === -1);
 };

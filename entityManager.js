@@ -8,8 +8,6 @@ _maze : [],
 _ghosts : [],
 _pacman : [],
 
-_bUpdateGhosts : true,
-
 // "PRIVATE" METHODS
 
 _forEachOf : function(aCategory, fn) {
@@ -96,18 +94,13 @@ resetAll : function() {
     this._forEachOf(this._ghosts, Ghost.prototype.reset);
 },
 
-//is used to stop the ghosts temporarly while pacman warps
-toggleUpdateGhosts : function() {
-    this._bUpdateGhosts = !this._bUpdateGhosts;
-},
-
 update : function(du) {
     for (var c = 0; c < this._categories.length; ++c) {
 
         var aCategory = this._categories[c];
         var i = 0;
 
-        if (!this._bUpdateGhosts && aCategory == this._ghosts)
+        if (!g_game.shouldUpdateGhosts && aCategory == this._ghosts)
             continue;
 
         while (i < aCategory.length) {

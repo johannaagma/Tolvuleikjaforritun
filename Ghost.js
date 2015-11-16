@@ -18,10 +18,7 @@ function Ghost(descr) {
     this.setup(descr);
     
     //setting the direction to either up or down
-    var directions = util.getArrayCopy(consts.allDirections[0]);
-    var randomDirection = util.chooseRandomFromArray(directions);
-    this.direction = randomDirection;
-
+    this.direction = this._getRandomVerticalDirection();
     this._updateVelocityByDirection();
 
     //converting seconds into nominal time units
@@ -44,21 +41,22 @@ Ghost.prototype = new MovingObject();
 
 // Initial, inheritable, default values
 Ghost.prototype.speed = 80 / SECS_TO_NOMINALS;
+Ghost.prototype.regularSpeed = 80 / SECS_TO_NOMINALS;
+Ghost.prototype.slowSpeed = 50 / SECS_TO_NOMINALS;
+Ghost.prototype.fastSpeed = 150 / SECS_TO_NOMINALS;
 
 //ghost box stuff
 Ghost.prototype.boxSeconds = 5;
 Ghost.prototype.canLeaveBox = false;
 Ghost.prototype.canGoToCenter = false;
 Ghost.prototype.canGoUp = false;
-Ghost.prototype.goBackToBox = false;
 
+//ghost mode stuff
+Ghost.prototype.ghostMode = g_game.SCATTER;
 //target tile coordinate
 Ghost.prototype.targetDir = {posX: 0, posY: 0};
-
 //target tile coordinate for when the ghost is in scatter mode
 Ghost.prototype.scatterTarget = {posX: 0, posY: 0};
-
-Ghost.prototype.ghostMode = g_game.SCATTER;
     
 Ghost.prototype.rememberResets = function () {
     // Remember my reset positions
@@ -86,7 +84,6 @@ Ghost.prototype.update = function (du) {
     if(this.canLeaveBox) {
         if(this.canGoToCenter) this._goToCenter(du);
         else if(this.canGoUp) this._goUp(du);
-        else if(this.goBackToBox) this._returnToBoxMovement(du);
         else this._update(du);
     }
     else {
@@ -94,7 +91,7 @@ Ghost.prototype.update = function (du) {
         this._moveInsideBox(du);
     }
 
-    if(!this.goBackToBox) {
+    if(this.ghostMode !== g_game.GOTOBOX) {
         var hitEntity = this.findHitEntity();
         if (hitEntity) {
             var canTakeHit = hitEntity.takeGhostHit;
@@ -110,7 +107,7 @@ Ghost.prototype.update = function (du) {
 
 Ghost.prototype._moveInsideBox = function (du) {
     var nextMazeValue = this._getNextMazeValue(du, this.direction);
-    if(nextMazeValue !== g_game.maze.PATH) {
+    if(this.isWall(nextMazeValue)) {
         this.direction = this._getOppisiteDirection();
         this._updateVelocityByDirection();
     }
@@ -137,7 +134,7 @@ Ghost.prototype._goToCenter = function (du) {
 
 Ghost.prototype._goUp = function (du) {
     var nextMazeValue = this._getNextMazeValue(du, this.direction);
-    if(nextMazeValue === g_game.maze.WALL) {
+    if(this.isWall(nextMazeValue)) {
         this.canGoUp = false;
         this.direction = "LEFT";
         this._updateVelocityByDirection();
@@ -147,40 +144,27 @@ Ghost.prototype._goUp = function (du) {
     }
 };
 
-Ghost.prototype._returnToBoxMovement = function (du) {    
-    /*
-    if(this.position === this.resetPosition) {
-        this.goBackToBox = false;
-        this.canLeaveBox = false;
-        this.ghostMode = g_game.SCATTER;
-        return;
-    }
-    else {*/
-        console.log("here");
-        var target = {posX: this.reset_cx, posY: this.reset_cy};
-        this._setTargetDirectionsToTarget(target, du);
-
-        this._updateVel(du);
-        this._updatePosition(du);
-    /*}
-
-
-    */
-    //this.goBackToBox = false;
-};
-
 //regular update stuff
 //====================
 
 Ghost.prototype._update = function (du) {
     if(this.ghostMode === g_game.CHASE) {
+        this.speed = this.regularSpeed;
         this._setTargetDirectionsToPacman(du);
     }
     else if(this.ghostMode === g_game.SCATTER) {
+        this.speed = this.regularSpeed;
         this._setTargetDirectionToScatterTarget(du);
     }
     else if(this.ghostMode === g_game.FRIGHTENED) {
+        this.speed = this.slowSpeed;
         this._setRandomTargetDirection();
+    }
+
+    else if(this.ghostMode === g_game.GOTOBOX) {
+        this.speed = this.fastSpeed;
+        this._setTargetDirectionsToGhostBox(du);
+        return;
     }
 
     this._updateVel(du);
@@ -200,7 +184,8 @@ Ghost.prototype._updatePosition = function (du) {
     var nextCol = nextMazeCoord.col;
     var nextRow = nextMazeCoord.row;
 
-    if((g_game.maze.getValue(nextCol, nextRow) === g_game.maze.PATH) && (this.direction !== "NONE")) {
+    var nextValue = g_game.maze.getValue(nextCol, nextRow);
+    if(!this.isWall(nextValue) && this.directions !== "NONE") {
         var nextPos = this._getNextPosition(du);
         this.cx = nextPos.cx;
         this.cy = nextPos.cy;
@@ -236,6 +221,27 @@ Ghost.prototype._setTargetDirectionsToPacman = function (du) {
     this._setTargetDirectionsToTarget(this.targetDir, du);
 };
 
+Ghost.prototype._setTargetDirectionsToGhostBox = function (du) {    
+    var target = {posX: this.reset_cx, posY: this.reset_cy};
+    this._setTargetDirectionsToTarget(target, du);
+
+    this._updateVel(du);
+    this._updatePosition(du);
+
+    //approximating the position (so it will be exacly on the targetPos)
+    var dir = this.direction;
+    var opDir = this._getOppisiteDirection();
+
+    var nextPos = this._computeNextPosByDir(du, dir);
+    var prevPos = this._computeNextPosByDir(du, opDir);
+
+    if(util.isBetweenPoints(target.posX, target.posY, 
+        nextPos.cx, nextPos.cy, 
+        prevPos.cx, prevPos.cy)) {
+        this.reset();
+    }
+};
+
 Ghost.prototype._setTargetDirectionsToTarget = function (target, du) {
     var directions = this._getAvailableDirections(du);
 
@@ -256,29 +262,24 @@ Ghost.prototype._setTargetDirectionsToTarget = function (target, du) {
     this.targetDirection = bestDirection;
 };
 
-Ghost.prototype.returnToBox = function () {    
-    this.reset();
-    //this.goBackToBox = true;
-};
-
 //AI ghost stuff
 //==============
 
 Ghost.prototype._updateTargetDir = function() {
     switch (this.name) {
-        case "blinky": this.selectTargetDirByBlinky.call(this); break;
-        case "pinky": this.selectTargetDirByPinky.call(this); break;
-        case "inky": this.selectTargetDirByInky.call(this); break;
-        case "clyde": this.selectTargetDirByClyde.call(this); break;
+        case "blinky": this._selectTargetDirByBlinky.call(this); break;
+        case "pinky": this._selectTargetDirByPinky.call(this); break;
+        case "inky": this._selectTargetDirByInky.call(this); break;
+        case "clyde": this._selectTargetDirByClyde.call(this); break;
     }
 };
 
-Ghost.prototype.selectTargetDirByBlinky = function() {
+Ghost.prototype._selectTargetDirByBlinky = function() {
     var target = g_game.pacman.getPos();
     this.targetDir = {posX: target.posX, posY: target.posY};
 };
 
-Ghost.prototype.selectTargetDirByPinky = function() {
+Ghost.prototype._selectTargetDirByPinky = function() {
     var pacman = g_game.pacman;
     var pacmanPos = pacman.getPos();
     var sign = this._computeVelSign(pacman.getDirection()); 
@@ -287,7 +288,7 @@ Ghost.prototype.selectTargetDirByPinky = function() {
     this.targetDir = {posX: target.cx, posY: target.cy};
 };
 
-Ghost.prototype.selectTargetDirByInky = function() {
+Ghost.prototype._selectTargetDirByInky = function() {
     var pacman = g_game.pacman;
     var pacmanPos = pacman.getPos();
     var sign = this._computeVelSign(pacman.getDirection()); 
@@ -304,7 +305,7 @@ Ghost.prototype.selectTargetDirByInky = function() {
     this.targetDir = {posX: targetX, posY: targetY};
 };
 
-Ghost.prototype.selectTargetDirByClyde = function() {
+Ghost.prototype._selectTargetDirByClyde = function() {
     var pacman = g_game.pacman;
     var distFromPacman = Math.sqrt(util.distSq(this.cx, this.cy, pacman.cx, pacman.cy));
     var distInTiles = distFromPacman/g_game.maze.cellWidth;
@@ -361,7 +362,8 @@ Ghost.prototype._getAvailableDirections = function (du) {
     var directions = this._getPossibleDirections();
 
     for(var i = 0; i < directions.length; i++) {
-        if(this._getNextMazeValue(du, directions[i]) !== g_game.maze.PATH) {
+        var nextValue = this._getNextMazeValue(du, directions[i]);
+        if(this.isWall(nextValue)) {
             directions.splice(i, 1);
             i--;
         }
@@ -381,19 +383,36 @@ Ghost.prototype.goToOppositeDirections = function () {
     this.direction = this.targetDirection;
 };
 
+Ghost.prototype._getRandomVerticalDirection = function () {
+    var directions = util.getArrayCopy(consts.allDirections[0]);
+    var randomDirection = util.chooseRandomFromArray(directions);
+    return randomDirection;
+};
+
 
 //collision stuff
 //===============
 
-Ghost.prototype.takePacmanHit = function () {
-    if(this.ghostMode === g_game.FRIGHTENED) this.returnToBox();
-    else g_game.pacman.warp();
+Ghost.prototype.takePacmanHit = function (pacman) {
+    if(this.ghostMode === g_game.FRIGHTENED) this.goToBox();
+    else if(this.ghostMode !== g_game.GOTOBOX) pacman.warp();
 };
 
 Ghost.prototype.takeGhostHit = function (ghost) {};
 
 //other stuff
 //===========
+
+Ghost.prototype.goToBox = function () {
+    if(g_playSound) g_sounds.eatGhost.play();
+    this.ghostMode = g_game.GOTOBOX;
+};
+
+Ghost.prototype._getNonWallCellTypes = function () {    
+    var nonWallCellTypes = [g_game.maze.PATH];
+    if(this.ghostMode === g_game.GOTOBOX || this.canGoUp) nonWallCellTypes.push(g_game.maze.DOOR);
+    return nonWallCellTypes;
+};
 
 Ghost.prototype.getRadius = function () {
     return this.sprite.width * this.scale / 2;
@@ -411,12 +430,13 @@ Ghost.prototype.reset = function () {
     this.canGoUp = false;
 
     this.ghostMode = g_game.SCATTER;
+    this.speed = this.regularSpeed;
 };
 
 Ghost.prototype.render = function(ctx) {
     var sprite = this.sprite;
 
-    if(this.goBackToBox) sprite = g_sprites.eyes;
+    if(this.ghostMode === g_game.GOTOBOX) sprite = g_sprites.eyes;
     else if(this.ghostMode === g_game.FRIGHTENED) sprite = g_sprites.frightened;
 
     var origScale = sprite.scale;

@@ -43,6 +43,16 @@ getWrapPos: function(pos) {
     return pos;
 },
 
+isBetweenPoints: function(x,y, x1,y1, x2,y2) {
+    var lowX = Math.min(x1,x2);
+    var highX = Math.max(x1,x2);
+
+    var lowY = Math.min(y1,y2);
+    var highY = Math.max(y1,y2);
+
+    return this.isBetween(x, lowX, highX) && this.isBetween(y, lowY, highY);
+},
+
 
 // RANDOMNESS
 // ==========

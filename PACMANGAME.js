@@ -42,10 +42,10 @@ function gatherInputs() {
 function updateSimulation(du) {
     
     processDiagnostics();
-    
-    if(g_game.canStartGame) entityManager.update(du);
 
     g_game.update(du);
+    
+    if(g_game.canStartGame) entityManager.update(du);
 
 }
 
@@ -61,7 +61,10 @@ var KEY_SOUND = keyCode('M');
 function processDiagnostics() {
     if (eatKey(KEY_SPATIAL)) g_renderSpatialDebug = !g_renderSpatialDebug;
 
-    if (eatKey(KEY_SOUND)) g_playSound = !g_playSound;
+    if (eatKey(KEY_SOUND)) {
+        g_sounds.stopAllSounds();
+        g_playSound = !g_playSound;
+    }
 
     if (eatKey(KEY_RESET)) g_game.resetLevel();
 }

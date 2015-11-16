@@ -58,6 +58,8 @@ var g_isUpdatePaused = false;
 function shouldSkipUpdate() {
     if (eatKey(KEY_PAUSE) && g_game.canStartGame) {
         g_isUpdatePaused = !g_isUpdatePaused;
+
+        g_sounds.pauseAllSounds();
     }
     return g_isUpdatePaused && !eatKey(KEY_STEP);    
 }

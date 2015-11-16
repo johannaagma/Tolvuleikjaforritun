@@ -38,10 +38,6 @@ Pacman.prototype.KEY_UP = keyCode('W');
 Pacman.prototype.KEY_DOWN  = keyCode('S');
 Pacman.prototype.KEY_LEFT   = keyCode('A');
 Pacman.prototype.KEY_RIGHT  = keyCode('D');
-
-// HACKED-IN AUDIO (no preloading)
-Pacman.prototype.chompSound = new Audio("sounds/pacman_chomp.wav");
-Pacman.prototype.deathSound = new Audio("sounds/pacman_death.wav");
     
 Pacman.prototype.rememberResets = function () {
     // Remember my reset positions
@@ -65,7 +61,7 @@ Pacman.prototype.update = function (du) {
     var hitEntity = this.findHitEntity();
     if (hitEntity) {
         var canTakeHit = hitEntity.takePacmanHit;
-        if(canTakeHit) canTakeHit.call(hitEntity); 
+        if(canTakeHit) canTakeHit.call(hitEntity, this); 
     }
 
     spatialManager.register(this);
@@ -75,11 +71,12 @@ Pacman.prototype.update = function (du) {
 //==========
 
 Pacman.prototype.warp = function () {
-    if(g_playSound) this.deathSound.play();
+    g_sounds.stopAllSounds();
+    if(g_playSound) g_sounds.death.play();
     this._isWarping = true;
     this._scaleDirn = -1;
     spatialManager.unregister(this);
-    entityManager.toggleUpdateGhosts();
+    g_game.toggleUpdateGhosts();
 };
 
 Pacman.prototype._updateWarp = function (du) {
@@ -120,10 +117,10 @@ Pacman.prototype._updateVel = function (du) {
 
 Pacman.prototype._updatePosition = function (du) {
     var nextMazeValue = this._getNextMazeValue(du, this.direction);
-    if(nextMazeValue === g_game.maze.PATH) {
+    if(!this.isWall(nextMazeValue)) {
         var nextPos = this._getNextPosition(du);
 
-        if((this.cx !== nextPos.cx || this.cy !== nextPos.cy) && g_playSound) this.chompSound.play();
+        if((this.cx !== nextPos.cx || this.cy !== nextPos.cy) && g_playSound) g_sounds.chomp.play();
 
         this.cx = nextPos.cx;
         this.cy = nextPos.cy;
@@ -153,14 +150,19 @@ Pacman.prototype._updateTargetDirection = function () {
     }
 };
 
+Pacman.prototype._getNonWallCellTypes = function () {    
+    var nonWallCellTypes = [g_game.maze.PATH];
+    return nonWallCellTypes;
+};
+
 //collision stuff
 //===============
 
-Pacman.prototype.takePacmanHit = function () {};
+Pacman.prototype.takePacmanHit = function (pacman) {};
 
 Pacman.prototype.takeGhostHit = function (ghost) {
-    if(ghost.ghostMode === g_game.FRIGHTENED) ghost.returnToBox()
-    else this.warp();
+    if(ghost.ghostMode === g_game.FRIGHTENED) ghost.goToBox();
+    else if(ghost.ghostMode !== g_game.GOTOBOX) this.warp();
 };
 
 //other stuff

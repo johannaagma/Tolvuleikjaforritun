@@ -4,19 +4,18 @@ maze : [],
 pacman : [],
 ghosts : [],
 
+shouldUpdateGhosts : true,
+
 //ghosts' mode
 _ghostModeTimer : 0,
 CHASE : 0,
 SCATTER : 1,
 FRIGHTENED : 2,
+GOTOBOX : 3,
 ghostMode : 0,
 
-_scatterTime : 2,//7,
-_chaseTime: 2,//20,
-
-_beginningSound : new Audio("sounds/pacman_beginning.wav"),
-_sirenSound : new Audio("sounds/pacman_siren.mp3"),
-_intermissionSound : new Audio("sounds/pacman_intermission.wav"),
+_scatterTime : 7,
+_chaseTime: 20,
 
 canStartGame : false,
 startGameTimer : 0,
@@ -37,21 +36,17 @@ _updateGhostModes : function () {
 },
 
 _playSound: function () {
-    if(g_playSound) {
-        if(this.ghostMode === this.FRIGHTENED)
-            this._intermissionSound.play();
-        else if(this.canStartGame)
-            this._sirenSound.play();
+    if(g_playSound && this.shouldUpdateGhosts) {
+        if(this.ghostMode === this.FRIGHTENED) g_sounds.intermission.play();
+        else if(this.canStartGame) g_sounds.siren.play();
     }
 },
 
 update : function (du) {
     this._playSound();
 
-    this.startGameTimer -= du;
     if(this.startGameTimer < 0) this.canStartGame = true;
-
-    this._ghostModeTimer -= du;
+    else this.startGameTimer -= du;
 
     if(this._ghostModeTimer < 0) {
         if(this.ghostMode === this.SCATTER) {
@@ -60,7 +55,7 @@ update : function (du) {
         }
         else if(this.ghostMode === this.CHASE) {
             this.ghostMode = this.FRIGHTENED;
-            this._ghostModeTimer = util.getNominalTime(20);
+            this._ghostModeTimer = util.getNominalTime(10);
         }
         else if(this.ghostMode === this.FRIGHTENED) {
             this.ghostMode = this.SCATTER;
@@ -70,6 +65,7 @@ update : function (du) {
         this._updateGhostModes();
         this._flipGhostDirections();
     }
+    else if(this.shouldUpdateGhosts) this._ghostModeTimer -= du;
 },
 
 renderReadyText : function (ctx) {
@@ -85,18 +81,24 @@ renderReadyText : function (ctx) {
 },
 
 resetLevel : function (ctx) {
-    //entityManager.toggleUpdateGhosts();
     entityManager.resetAll();
     this.initGame();
 },
 
+//is used to stop the ghosts temporarly while pacman warps
+toggleUpdateGhosts : function() {
+    this.shouldUpdateGhosts = !this.shouldUpdateGhosts;
+},
+
 initGame : function () {
+    g_sounds.stopAllSounds();
+
     this.ghostMode = this.SCATTER;
     var introTime = 4;
 
     this.canStartGame = false;
     this.startGameTimer = util.getNominalTime(introTime);
-    if(g_playSound) this._beginningSound.play();
+    if(g_playSound) g_sounds.beginning.play();
 
     this._ghostModeTimer = util.getNominalTime(this._scatterTime+introTime);
 },

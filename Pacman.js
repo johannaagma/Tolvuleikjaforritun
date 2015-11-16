@@ -93,7 +93,7 @@ Pacman.prototype._updateWarp = function (du) {
         this._isWarping = false;
         spatialManager.register(this);
 
-        entityManager.toggleUpdateGhosts();
+        g_game.toggleUpdateGhosts();
         g_game.resetLevel();
     }
 };

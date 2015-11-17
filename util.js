@@ -65,6 +65,14 @@ chooseRandomFromArray : function(arr) {
     return arr[Math.floor(Math.random() * arr.length)];
 },
 
+nMeanRandRange: function(min, max,n) {
+    var random = 0;
+    for(var i = 0; i < n; i++){
+            var random = util.randRange(min,max)+random;
+        }
+    return random/n;
+},
+
 
 // MISC
 // ====

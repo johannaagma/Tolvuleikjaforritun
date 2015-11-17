@@ -1,8 +1,10 @@
 var g_game = {
 
 maze : [],
+pallets : [],
 pacman : [],
 ghosts : [],
+score : 0,
 
 shouldUpdateGhosts : true,
 

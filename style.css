@@ -1,0 +1,12 @@
+#myCanvas {
+    float: left;
+}
+
+#instructions {
+	float: left;
+	margin-left: 50px;
+}
+
+h3, p {
+	font-family: Calibri, Candara, Segoe, 'Segoe UI', Optima, Arial, sans-serif;
+}

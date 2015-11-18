@@ -50,7 +50,7 @@ Ghost.prototype.boxSeconds = 5;
 Ghost.prototype.canLeaveBox = false;
 Ghost.prototype.canGoToCenter = false;
 Ghost.prototype.canGoUp = false;
-
+Ghost.prototype.isWarping =false;
 //ghost mode stuff
 Ghost.prototype.ghostMode = 1;
 //target tile coordinate
@@ -394,6 +394,7 @@ Ghost.prototype._getRandomVerticalDirection = function () {
 //===============
 
 Ghost.prototype.takePacmanHit = function (pacman) {
+    Ghost.prototype.isWarping = true;
     if(this.ghostMode === g_game.FRIGHTENED) {
         this.goToBox();
         g_game.increaseScore(200);
@@ -445,7 +446,7 @@ Ghost.prototype.render = function(ctx) {
     var origScale = sprite.scale;
 
     // pass my scale into the sprite, for drawing
-    sprite.scale = this.scale*2;
+     this.sprite.scale = this._scale*2;
 
     sprite.drawWrappedCentredAt(
 	   ctx, this.cx, this.cy, this.rotation

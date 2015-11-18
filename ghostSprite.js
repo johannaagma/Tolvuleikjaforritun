@@ -22,7 +22,12 @@ ghostSprite.prototype.drawAt = function (ctx,x, y) {
 
 ghostSprite.prototype.drawCentredAt = function (ctx, cx, cy, rotation) {
     if (rotation === undefined) rotation = 0;
-    var y = Math.round(Math.random());
+    if (g_isUpdatePaused === true || g_game.pacman.isWarping === true){
+        var y = 0;
+    }
+    else {
+     y = Math.round(Math.random());
+    }
     var w = this.width,
         h = this.height;
 

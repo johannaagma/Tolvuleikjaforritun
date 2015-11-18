@@ -83,6 +83,8 @@ Pacman.prototype.warp = function () {
 };
 
 Pacman.prototype._updateWarp = function (du) {
+    this.isWarping = true;
+    this.isMoving =false;
     var SHRINK_RATE = 0.3 / SECS_TO_NOMINALS;
     this._scale += this._scaleDirn * SHRINK_RATE * du;
     
@@ -127,6 +129,7 @@ Pacman.prototype._updatePosition = function (du) {
         this.cy = nextPos.cy;
 
         this.isMoving = true;
+        this.isWarping = false;
     }
     else {
         //centering the coordinates to the maze's cell's center

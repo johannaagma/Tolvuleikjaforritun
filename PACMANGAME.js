@@ -122,7 +122,7 @@ function requestPreloads() {
         pinky : "https://notendur.hi.is/~elr13/images/SpriteSheet.png",
         clyde : "https://notendur.hi.is/~elr13/images/SpriteSheet.png",
         frightened : "https://notendur.hi.is/~elr13/images/frightened.png",
-        eyes : "https://notendur.hi.is/~jam9/pics/eyes.png",
+        eyes : "https://notendur.hi.is/~elr13/images/eyes.png",
         map: "img/map.png",
     };
 
@@ -139,7 +139,7 @@ function preloadDone() {
     g_sprites.pinky = new ghostSprite(g_images.pinky,90,0,45,45);
     g_sprites.clyde = new ghostSprite(g_images.clyde,135,0,45,45);
     g_sprites.frightened = new ghostSprite(g_images.frightened,0,0,45,45);
-    g_sprites.eyes = new Sprite(g_images.eyes,0,0,30,30);
+    g_sprites.eyes = new Sprite(g_images.eyes,0,0,40,40);
     g_sprites.map = new Sprite(g_images.map,0,0,506,559);
 
     entityManager.init();

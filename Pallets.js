@@ -107,6 +107,7 @@ Pallets.prototype.fruit = function (probability,n,score,paccol,pacrow) {
 
     if(this._pallets[paccol][pacrow] === n){
         g_game.increaseScore(score);
+        g_game.increaseCherryCount(1);
         if(g_playSound) g_game.eatFruit.play();
         this._pallets[paccol][pacrow] = 9;
     }

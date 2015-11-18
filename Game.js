@@ -25,7 +25,7 @@ Game.prototype.pacman = [];
 Game.prototype.ghosts = [];
 
 Game.prototype.score = 0;
-
+Game.prototype.ncherry = 0;
 Game.prototype.lives = 3;
 Game.prototype.gameOver = false;
 Game.prototype.gameWon = false;
@@ -185,6 +185,11 @@ Game.prototype.increaseScore = function (inc) {
     if(g_playSound) g_game.chomp.play();
 };
 
+Game.prototype.increaseCherryCount = function (inc) {
+    this.ncherry += inc;
+    //if(g_playSound) g_game.chomp.play();
+};
+
 Game.prototype.resetScore = function (inc) {
     this.score = 0;
 };
@@ -195,6 +200,7 @@ Game.prototype.resetScore = function (inc) {
 Game.prototype.render = function (ctx) {
     if(!this.canStartGame) this._renderReadyText(ctx);
     this._renderScore(ctx);
+    this._renderCherryCount(ctx);
     this._renderLevel(ctx);
     this._renderLives(ctx);
 };
@@ -219,11 +225,21 @@ Game.prototype._renderScore = function (ctx) {
     util.renderText(ctx, text, style, font, cx, cy);
 };
 
+Game.prototype._renderCherryCount = function (ctx) {
+    var text = "Fruits:   "+this.ncherry;
+    var style = "white";
+    var font = "18px Calibri";
+    var cx = g_canvas.width/2-60;;
+    var cy = g_gCanvas.height + (g_canvas.height-g_gCanvas.height)/2;
+
+    util.renderText(ctx, text, style, font, cx, cy);
+};
+
 Game.prototype._renderLevel = function (ctx) {
     var text = "Level:   "+1;
     var style = "white";
     var font = "18px Calibri";
-    var cx = g_canvas.width/2;
+    var cx = g_canvas.width/2+60;
     var cy = g_gCanvas.height + (g_canvas.height-g_gCanvas.height)/2;
 
     util.renderText(ctx, text, style, font, cx, cy);

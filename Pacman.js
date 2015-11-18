@@ -85,7 +85,7 @@ Pacman.prototype.warp = function () {
 Pacman.prototype._updateWarp = function (du) {
     this.isWarping = true;
     this.isMoving =false;
-    var SHRINK_RATE = 0.3 / SECS_TO_NOMINALS;
+    var SHRINK_RATE = 0.8 / SECS_TO_NOMINALS;
     this._scale += this._scaleDirn * SHRINK_RATE * du;
     
     if (this._scale/this._spriteScale < 0.2) {

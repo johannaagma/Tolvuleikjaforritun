@@ -90,7 +90,7 @@ Sprite.prototype.main = function (cx,cy, rotation)
     cel = g_spriteimages[g_cel];
 
     if (g_game.pacman.isMoving === false || g_isUpdatePaused === true){
-        this.scale=1;
+        //this.scale=1;
       this.drawWrappedCentredAt(ctx, g_game.pacman.cx, g_game.pacman.cy, g_game.pacman.rotation);
        } 
     else{

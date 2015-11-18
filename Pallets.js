@@ -55,7 +55,7 @@ function Pallets(descr) {
 };
 
 Pallets.prototype.rememberResets = function () {
-    this.reset_pallets = this._pallets;
+    this.reset_pallets = util.getArrayCopy(this._pallets);
 };
     
 Pallets.prototype.update = function (du) {
@@ -121,11 +121,13 @@ Pallets.prototype.render = function (ctx) {
 };
 
 Pallets.prototype.reset = function () {
-    this._pallets = this.reset_pallets;
-
-    //TODO ÞETTA VIRKAR EKKI :(
+    this._pallets = util.getArrayCopy(this.reset_pallets);
 };
 
 Pallets.prototype.checkIfWon = function () {
     //TODO á eftir að forrita
+
+    //boolean won = ...;
+    if(won) g_game.gameWon = true;
+
 };

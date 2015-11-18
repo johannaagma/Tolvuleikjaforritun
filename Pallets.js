@@ -52,6 +52,8 @@ function Pallets(descr) {
 
     this.rememberResets();
 
+    this.numberof0 = this.count0();
+
 };
 
 Pallets.prototype.rememberResets = function () {
@@ -68,13 +70,18 @@ Pallets.prototype.update = function (du) {
         var randomcol = Math.floor(util.nMeanRandRange(0,this.ncol,n))
         var randomrow = Math.floor(util.nMeanRandRange(0,this.nrow,n))
         var mazestate = this._pallets[randomcol][randomrow];
-        if(mazestate===0 || mazestate===9){
+        if(mazestate===0){
+            this._pallets[randomcol][randomrow] = 3;
+            this.numberof0--;
+        }
+        if(mazestate===9){
             this._pallets[randomcol][randomrow] = 3;
         }
     }
     if(this._pallets[paccol][pacrow] === 0){
         g_game.increaseScore(10);
         this._pallets[paccol][pacrow] = 9;
+        this.numberof0--;
     }
     if(this._pallets[paccol][pacrow] === 2){
         g_game.increaseScore(1);
@@ -89,6 +96,20 @@ Pallets.prototype.update = function (du) {
 
     this.checkIfWon();
 };
+
+Pallets.prototype.count0 = function () {
+    var nzeros = 0;
+
+    for(var col=0; col<this.ncol; col++) {
+        for(var row=0; row<this.nrow; row++) {
+            if(this._pallets[col][row] === 0) {
+                nzeros++;
+            }
+        }
+    }
+    return nzeros;
+}
+
 
 Pallets.prototype.render = function (ctx) {
       for(var col=0; col<this.ncol; col++) {
@@ -126,8 +147,7 @@ Pallets.prototype.reset = function () {
 
 Pallets.prototype.checkIfWon = function () {
     //TODO á eftir að forrita
-
-    //boolean won = ...;
-    //if(won) g_game.gameWon = true;
+    var won = this.numberof0 == 0;
+    if(won) g_game.gameWon = true;
 
 };

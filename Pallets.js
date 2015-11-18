@@ -128,6 +128,6 @@ Pallets.prototype.checkIfWon = function () {
     //TODO á eftir að forrita
 
     //boolean won = ...;
-    if(won) g_game.gameWon = true;
+    //if(won) g_game.gameWon = true;
 
 };

@@ -15,6 +15,13 @@ var g_gCanvas = {width : g_canvas.width, height : g_canvas.height-50}; //is also
 12345678901234567890123456789012345678901234567890123456789012345678901234567890
 */
 
+// ==========
+// GAME STUFF
+// ==========
+
+var g_game = new Game();
+
+
 // =============
 // GATHER INPUTS
 // =============
@@ -40,6 +47,7 @@ function gatherInputs() {
 // GAME-SPECIFIC UPDATE LOGIC
 
 function updateSimulation(du) {
+    if(g_game.gameOver || g_game.gameWon) return;
     
     processDiagnostics();
 
@@ -62,11 +70,11 @@ function processDiagnostics() {
     if (eatKey(KEY_SPATIAL)) g_renderSpatialDebug = !g_renderSpatialDebug;
 
     if (eatKey(KEY_SOUND)) {
-        g_sounds.stopAllSounds();
+        g_game.stopAllSounds();
         g_playSound = !g_playSound;
     }
 
-    if (eatKey(KEY_RESET)) g_game.resetLevel();
+    if (eatKey(KEY_RESET)) g_game.resetGame();
 }
 
 
@@ -85,9 +93,15 @@ function processDiagnostics() {
 // GAME-SPECIFIC RENDERING
 
 function renderSimulation(ctx) {
+    if(g_game.gameOver || g_game.gameWon) {
+        if(g_game.gameOver) g_game.renderGameOver(ctx);
+        if(g_game.gameWon) g_game.renderGameWon(ctx);
+        return;
+    }
+
     entityManager.render(ctx);
 
-    if(!g_game.canStartGame) g_game.renderReadyText(ctx);
+    g_game.render(ctx);
 
     if (g_renderSpatialDebug) spatialManager.render(ctx);
 }
@@ -102,7 +116,7 @@ var g_images = {};
 function requestPreloads() {
 
     var requiredImages = {
-       pacman : "https://notendur.hi.is/~elr13/images/sprite_pac.png",
+        pacman : "https://notendur.hi.is/~elr13/images/sprite_pac.png",
         blinky : "https://notendur.hi.is/~elr13/images/SpriteSheet.png",
         inky : "https://notendur.hi.is/~elr13/images/SpriteSheet.png",
         pinky : "https://notendur.hi.is/~elr13/images/SpriteSheet.png",
@@ -119,7 +133,7 @@ var g_sprites = {};
 
 function preloadDone() {
     
-g_sprites.pacman = new Sprite(g_images.pacman,0,0,32,32);
+    g_sprites.pacman = new Sprite(g_images.pacman,0,0,32,32);
     g_sprites.blinky = new ghostSprite(g_images.blinky,0,0,45,45);
     g_sprites.inky = new ghostSprite(g_images.inky,45,0,45,45);
     g_sprites.pinky = new ghostSprite(g_images.pinky,90,0,45,45);
@@ -135,4 +149,4 @@ g_sprites.pacman = new Sprite(g_images.pacman,0,0,32,32);
 
 // Kick it off
 requestPreloads();
-g_game.initGame();
+g_game.init();

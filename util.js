@@ -140,6 +140,20 @@ fillBox: function (ctx, cx, cy, w, h, style) {
     ctx.fillStyle = oldStyle;
 },
 
+renderText: function (ctx, text, style, font, cx, cy) {
+    var oldStyle = ctx.fillStyle;
+
+    ctx.fillStyle = style;
+    ctx.font = font;
+
+    ctx.textBaseline = "middle";
+    ctx.textAlign = "center";
+
+    ctx.fillText(text, cx, cy);
+
+    ctx.fillStyle = oldStyle;
+},
+
 
 // MAZE CALCULATIONS
 // =================

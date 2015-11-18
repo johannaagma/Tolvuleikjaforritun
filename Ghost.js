@@ -52,7 +52,7 @@ Ghost.prototype.canGoToCenter = false;
 Ghost.prototype.canGoUp = false;
 
 //ghost mode stuff
-Ghost.prototype.ghostMode = g_game.SCATTER;
+Ghost.prototype.ghostMode = 1;
 //target tile coordinate
 Ghost.prototype.targetDir = {posX: 0, posY: 0};
 //target tile coordinate for when the ghost is in scatter mode
@@ -394,7 +394,10 @@ Ghost.prototype._getRandomVerticalDirection = function () {
 //===============
 
 Ghost.prototype.takePacmanHit = function (pacman) {
-    if(this.ghostMode === g_game.FRIGHTENED) this.goToBox();
+    if(this.ghostMode === g_game.FRIGHTENED) {
+        this.goToBox();
+        g_game.increaseScore(200);
+    }
     else if(this.ghostMode !== g_game.GOTOBOX) pacman.warp();
 };
 
@@ -404,7 +407,7 @@ Ghost.prototype.takeGhostHit = function (ghost) {};
 //===========
 
 Ghost.prototype.goToBox = function () {
-    if(g_playSound) g_sounds.eatGhost.play();
+    if(g_playSound) g_game.eatGhost.play();
     this.ghostMode = g_game.GOTOBOX;
 };
 

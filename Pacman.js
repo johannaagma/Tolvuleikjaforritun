@@ -35,6 +35,7 @@ Pacman.prototype = new MovingObject();
 Pacman.prototype.speed = 90 / SECS_TO_NOMINALS;
 Pacman.prototype.isMoving = false;
 
+
 Pacman.prototype.KEY_UP = keyCode('W');
 Pacman.prototype.KEY_DOWN  = keyCode('S');
 Pacman.prototype.KEY_LEFT   = keyCode('A');
@@ -72,8 +73,9 @@ Pacman.prototype.update = function (du) {
 //==========
 
 Pacman.prototype.warp = function () {
-    g_sounds.stopAllSounds();
-    if(g_playSound) g_sounds.death.play();
+    g_game.loseLife();
+    g_game.stopAllSounds();
+    if(g_playSound) g_game.death.play();
     this._isWarping = true;
     this._scaleDirn = -1;
     spatialManager.unregister(this);
@@ -120,8 +122,6 @@ Pacman.prototype._updatePosition = function (du) {
     var nextMazeValue = this._getNextMazeValue(du, this.direction);
     if(!this.isWall(nextMazeValue)) {
         var nextPos = this._getNextPosition(du);
-
-        if((this.cx !== nextPos.cx || this.cy !== nextPos.cy) && g_playSound) g_sounds.chomp.play();
 
         this.cx = nextPos.cx;
         this.cy = nextPos.cy;
@@ -192,7 +192,7 @@ Pacman.prototype.render = function (ctx) {
     this.sprite.scale = this._scale*2;
 
     this.rotation = consts.rotations[this.direction];
-
+    
     this.sprite.render(
 	   ctx, this.cx, this.cy, this.rotation
     );

@@ -14,6 +14,15 @@
 
 // A generic contructor which accepts an arbitrary descriptor object
 function Pallets(descr) {
+    // Default sprite, if not otherwise specified
+    this.sprite = this.sprite || g_sprites.cherry;
+    
+    // Set normal drawing scale, and warp state off
+    var spriteWidth = this.sprite.width;
+    var targetSpriteWidth = g_game.maze.colWidth;
+    this._scale = targetSpriteWidth/spriteWidth;
+
+
     this._pallets = [
         [1,1,1,1,1,1,1,1,1,1,8,8,8,1,0,1,8,8,8,1,1,1,1,1,1,1,1,1,1,1,1],
         [1,0,0,2,0,0,0,0,0,1,9,9,8,1,0,1,8,8,8,1,0,0,0,2,1,1,0,0,0,0,1],
@@ -63,21 +72,9 @@ Pallets.prototype.rememberResets = function () {
 Pallets.prototype.update = function (du) {
     var paccol = util.getMazeCoord(g_game.pacman.cx,g_game.pacman.cy).col;
     var pacrow = util.getMazeCoord(g_game.pacman.cx,g_game.pacman.cy).row;
-    var random = Math.random();
-    if(random<0.01){
-        var n = 5;
+    
+    this.fruit(0.001,3,50,paccol,pacrow);
 
-        var randomcol = Math.floor(util.nMeanRandRange(0,this.ncol,n))
-        var randomrow = Math.floor(util.nMeanRandRange(0,this.nrow,n))
-        var mazestate = this._pallets[randomcol][randomrow];
-        if(mazestate===0){
-            this._pallets[randomcol][randomrow] = 3;
-            this.numberof0--;
-        }
-        if(mazestate===9){
-            this._pallets[randomcol][randomrow] = 3;
-        }
-    }
     if(this._pallets[paccol][pacrow] === 0){
         g_game.increaseScore(10);
         this._pallets[paccol][pacrow] = 9;
@@ -88,14 +85,32 @@ Pallets.prototype.update = function (du) {
         g_game.setToFrightenedMode();
         this._pallets[paccol][pacrow] = 9;
     }
-    if(this._pallets[paccol][pacrow] === 3){
-        g_game.increaseScore(50);
+    
+    this.checkIfWon();
+};
+
+Pallets.prototype.fruit = function (probability,n,score,paccol,pacrow) {
+    var random = Math.random();
+    if(random<probability){
+        var nr = 5;
+        var randomcol = Math.floor(util.nMeanRandRange(0,this.ncol,nr))
+        var randomrow = Math.floor(util.nMeanRandRange(0,this.nrow,nr))
+        var mazestate = this._pallets[randomcol][randomrow];
+        if(mazestate===0){
+            this._pallets[randomcol][randomrow] = n;
+            this.numberof0--;
+        }
+        if(mazestate===9){
+            this._pallets[randomcol][randomrow] = n;
+        }
+    }
+
+    if(this._pallets[paccol][pacrow] === n){
+        g_game.increaseScore(score);
         if(g_playSound) g_game.eatFruit.play();
         this._pallets[paccol][pacrow] = 9;
     }
-
-    this.checkIfWon();
-};
+}
 
 Pallets.prototype.count0 = function () {
     var nzeros = 0;
@@ -130,12 +145,15 @@ Pallets.prototype.render = function (ctx) {
             }
             if(this._pallets[col][row] === 3) {
                 var coord = util.getCanvasCoord(col, row);
-                util.fillBox(ctx, 
-                    coord.cx,
-                    coord.cy,
-                    this.colWidth,
-                    this.colHeight,
-                    "red");
+                var origScale = this.sprite.scale;
+
+                // pass my scale into the sprite, for drawing
+                this.sprite.scale = this._scale;
+
+                this.sprite.drawWrappedCentredAt(
+                    ctx, coord.cx, coord.cy, 0
+                    );
+                this.sprite.scale = origScale;
             }
         }
     }

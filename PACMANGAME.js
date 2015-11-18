@@ -124,6 +124,7 @@ function requestPreloads() {
         frightened : "https://notendur.hi.is/~elr13/images/frightened.png",
         eyes : "https://notendur.hi.is/~elr13/images/eyes.png",
         map: "img/map.png",
+        fruits: "img/spritesheet.png",
     };
 
     imagesPreload(requiredImages, g_images, preloadDone);
@@ -141,6 +142,7 @@ function preloadDone() {
     g_sprites.frightened = new ghostSprite(g_images.frightened,0,0,45,45);
     g_sprites.eyes = new Sprite(g_images.eyes,0,0,40,40);
     g_sprites.map = new Sprite(g_images.map,0,0,506,559);
+    g_sprites.cherry = new Sprite(g_images.fruits,3,123,27,24);
 
     entityManager.init();
 

@@ -27,6 +27,8 @@ function Pacman(descr) {
     var targetSpriteWidth = g_game.maze.cellWidth;
     this._scale = targetSpriteWidth/spriteWidth;
     this._spriteScale = this._scale;
+
+    this.targetDirection = "RIGHT";
 };
 
 Pacman.prototype = new MovingObject();

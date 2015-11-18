@@ -33,6 +33,7 @@ Pacman.prototype = new MovingObject();
 
 // Initial, inheritable, default values
 Pacman.prototype.speed = 90 / SECS_TO_NOMINALS;
+Pacman.prototype.isMoving = false;
 
 Pacman.prototype.KEY_UP = keyCode('W');
 Pacman.prototype.KEY_DOWN  = keyCode('S');
@@ -124,12 +125,16 @@ Pacman.prototype._updatePosition = function (du) {
 
         this.cx = nextPos.cx;
         this.cy = nextPos.cy;
+
+        this.isMoving = true;
     }
     else {
         //centering the coordinates to the maze's cell's center
         var center = this._getMazeCenterCoord(this.cx, this.cy);
         this.cy = center.cy;
         this.cx = center.cx;
+
+        this.isMoving = false;
     }
 
     this.wrapPosition();
@@ -188,7 +193,7 @@ Pacman.prototype.render = function (ctx) {
 
     this.rotation = consts.rotations[this.direction];
 
-    this.sprite.drawWrappedCentredAt(
+    this.sprite.render(
 	   ctx, this.cx, this.cy, this.rotation
     );
 

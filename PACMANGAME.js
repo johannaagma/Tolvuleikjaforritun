@@ -102,12 +102,12 @@ var g_images = {};
 function requestPreloads() {
 
     var requiredImages = {
-        pacman : "https://notendur.hi.is/~jam9/pics/pacman.png",
-        blinky : "https://notendur.hi.is/~jam9/pics/blinky.png",
-        inky : "https://notendur.hi.is/~jam9/pics/inky.png",
-        pinky : "https://notendur.hi.is/~jam9/pics/pinky.png",
-        clyde : "https://notendur.hi.is/~jam9/pics/clyde.png",
-        frightened : "https://notendur.hi.is/~jam9/pics/inky.png",
+       pacman : "https://notendur.hi.is/~elr13/images/sprite_pac.png",
+        blinky : "https://notendur.hi.is/~elr13/images/SpriteSheet.png",
+        inky : "https://notendur.hi.is/~elr13/images/SpriteSheet.png",
+        pinky : "https://notendur.hi.is/~elr13/images/SpriteSheet.png",
+        clyde : "https://notendur.hi.is/~elr13/images/SpriteSheet.png",
+        frightened : "https://notendur.hi.is/~elr13/images/frightened.png",
         eyes : "https://notendur.hi.is/~jam9/pics/eyes.png",
         map: "img/map.png",
     };
@@ -119,14 +119,14 @@ var g_sprites = {};
 
 function preloadDone() {
     
-    g_sprites.pacman = new Sprite(g_images.pacman);
-    g_sprites.blinky = new Sprite(g_images.blinky);
-    g_sprites.inky = new Sprite(g_images.inky);
-    g_sprites.pinky = new Sprite(g_images.pinky);
-    g_sprites.clyde = new Sprite(g_images.clyde);
-    g_sprites.frightened = new Sprite(g_images.frightened);
-    g_sprites.eyes = new Sprite(g_images.eyes);
-    g_sprites.map = new Sprite(g_images.map);
+g_sprites.pacman = new Sprite(g_images.pacman,0,0,32,32);
+    g_sprites.blinky = new ghostSprite(g_images.blinky,0,0,45,45);
+    g_sprites.inky = new ghostSprite(g_images.inky,45,0,45,45);
+    g_sprites.pinky = new ghostSprite(g_images.pinky,90,0,45,45);
+    g_sprites.clyde = new ghostSprite(g_images.clyde,135,0,45,45);
+    g_sprites.frightened = new ghostSprite(g_images.frightened,0,0,45,45);
+    g_sprites.eyes = new Sprite(g_images.eyes,0,0,30,30);
+    g_sprites.map = new Sprite(g_images.map,0,0,506,559);
 
     entityManager.init();
 

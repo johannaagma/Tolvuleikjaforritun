@@ -47,9 +47,9 @@ function gatherInputs() {
 // GAME-SPECIFIC UPDATE LOGIC
 
 function updateSimulation(du) {
-    if(g_game.gameOver || g_game.gameWon) return;
-    
     processDiagnostics();
+
+    if(g_game.gameOver || g_game.gameWon) return;
 
     g_game.update(du);
     
@@ -74,7 +74,16 @@ function processDiagnostics() {
         g_playSound = !g_playSound;
     }
 
-    if (eatKey(KEY_RESET)) g_game.resetGame();
+    if (eatKey(KEY_RESET)) {
+        console.log("here");
+        if(g_game.gameOver || g_game.gameWon) {
+            g_game.gameOver = false;
+            g_game.gameWon = false;
+            console.log("fixed "+g_game.gameOver+" "+g_game.gameOver);
+        }
+        g_game.resetGame();
+        console.log("check2 "+g_game.gameOver+" "+g_game.gameOver);
+    }
 }
 
 
@@ -94,6 +103,7 @@ function processDiagnostics() {
 
 function renderSimulation(ctx) {
     if(g_game.gameOver || g_game.gameWon) {
+        console.log("render "+g_game.gameOver+" "+g_game.gameOver);
         if(g_game.gameOver) g_game.renderGameOver(ctx);
         if(g_game.gameWon) g_game.renderGameWon(ctx);
         return;

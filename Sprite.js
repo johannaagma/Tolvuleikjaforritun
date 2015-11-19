@@ -90,11 +90,13 @@ Sprite.prototype.main = function (cx,cy, rotation)
     cel = g_spriteimages[g_cel];
 
     if (g_game.pacman.isMoving === false || g_isUpdatePaused === true){
-        //this.scale=1;
-      this.drawWrappedCentredAt(ctx, g_game.pacman.cx, g_game.pacman.cy, g_game.pacman.rotation);
+        //var oldScale = this.scale;
+        //this.scale = cel.scale;
+        this.drawWrappedCentredAt(ctx, g_game.pacman.cx, g_game.pacman.cy, g_game.pacman.rotation);
+        //this.scale = oldScale;
        } 
     else{
-    cel.drawWrappedCentredAt(ctx,g_game.pacman.cx,g_game.pacman.cy, g_game.pacman.rotation);
+        cel.drawWrappedCentredAt(ctx,g_game.pacman.cx,g_game.pacman.cy, g_game.pacman.rotation);
     }
     ++g_cel;
     if(g_cel === g_spriteimages.length) g_cel=0;

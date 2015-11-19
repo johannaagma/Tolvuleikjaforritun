@@ -156,7 +156,9 @@ Game.prototype.resetLevel = function (ctx) {
 
 Game.prototype.resetGame = function (ctx) {
     this.resetLevel();
-    this.resetScore();
+    this.score = 0;
+    this.lives = 3;
+    this.ncherry = 0;
     this.pallets.reset();
 };
 
@@ -187,11 +189,7 @@ Game.prototype.increaseScore = function (inc) {
 
 Game.prototype.increaseCherryCount = function (inc) {
     this.ncherry += inc;
-    //if(g_playSound) g_game.chomp.play();
-};
-
-Game.prototype.resetScore = function (inc) {
-    this.score = 0;
+    if(g_playSound) g_game.eatFruit.play();
 };
 
 //render related

@@ -108,7 +108,6 @@ Pallets.prototype.fruit = function (probability,n,score,paccol,pacrow) {
     if(this._pallets[paccol][pacrow] === n){
         g_game.increaseScore(score);
         g_game.increaseCherryCount(1);
-        if(g_playSound) g_game.eatFruit.play();
         this._pallets[paccol][pacrow] = 9;
     }
 }
@@ -165,8 +164,7 @@ Pallets.prototype.reset = function () {
 };
 
 Pallets.prototype.checkIfWon = function () {
-    //TODO á eftir að forrita
-    var won = this.numberof0 == 0;
+    var won = this.numberof0 === 0;
     if(won) g_game.gameWon = true;
 
 };

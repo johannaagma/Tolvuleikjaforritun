@@ -185,8 +185,8 @@ Pacman.prototype.getRadius = function () {
 Pacman.prototype.reset = function () {
     this.setPos(this.reset_cx, this.reset_cy);
     this.rotation = this.reset_rotation;
-    this.direction = "NONE";
-    this.targetDirection = "NONE";
+    this.direction = "RIGHT";
+    this.targetDirection = "RIGHT";
     this._updateVelocityByDirection();
 };
 
